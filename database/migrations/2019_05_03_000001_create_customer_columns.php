@@ -8,55 +8,54 @@ use Shopper\Core\Helpers\Migration;
 
 return new class extends Migration
 {
+    /**
+     * Columns this migration owns. The host application may already carry
+     * some of them (or a `name` column it relies on): every column is added
+     * only when it is missing, nothing is renamed, and `down()` removes only
+     * what `up()` added.
+     *
+     * @var array<string, string>
+     */
+    private const COLUMNS = [
+        'last_name' => 'string',
+        'first_name' => 'string',
+        'gender' => 'string',
+        'birth_date' => 'date',
+        'avatar_type' => 'avatar_type',
+        'avatar_location' => 'string',
+        'timezone' => 'string',
+        'opt_in' => 'opt_in',
+        'last_login_at' => 'timestamp',
+        'last_login_ip' => 'string',
+    ];
+
     public function up(): void
     {
         Schema::table('users', static function (Blueprint $table): void {
-            if (Schema::hasColumn('users', 'name')) {
-                $table->renameColumn('name', 'last_name');
-            } else {
-                $table->string('last_name');
+            foreach (self::COLUMNS as $column => $kind) {
+                if (Schema::hasColumn('users', $column)) {
+                    continue;
+                }
+
+                match ($kind) {
+                    'string' => $table->string($column)->nullable(),
+                    'date' => $table->date($column)->nullable(),
+                    'timestamp' => $table->timestamp($column)->nullable(),
+                    'avatar_type' => $table->string($column)->default('avatar_ui'),
+                    'opt_in' => $table->boolean($column)->default(false),
+                };
             }
-
-            $table->string('password')->nullable()->change();
-
-            $table->after('id', static function (Blueprint $table): void {
-                $table->string('first_name')->nullable();
-                $table->string('gender');
-                $table->string('phone_number')->nullable();
-                $table->date('birth_date')->nullable();
-                $table->string('avatar_type')->default('avatar_ui');
-                $table->string('avatar_location')->nullable();
-                $table->string('timezone')->nullable();
-                $table->boolean('opt_in')->default(false);
-                $table->timestamp('last_login_at')->nullable();
-                $table->string('last_login_ip')->nullable();
-            });
         });
     }
 
     public function down(): void
     {
         Schema::table('users', static function (Blueprint $table): void {
-            $table->dropColumn([
-                'first_name',
-                'gender',
-                'phone_number',
-                'birth_date',
-                'avatar_type',
-                'avatar_location',
-                'timezone',
-                'opt_in',
-                'last_login_at',
-                'last_login_ip',
-            ]);
-
-            if (Schema::hasColumn('users', 'last_name')) {
-                $table->renameColumn('last_name', 'name');
-            } else {
-                $table->string('name');
+            foreach (array_keys(self::COLUMNS) as $column) {
+                if (Schema::hasColumn('users', $column)) {
+                    $table->dropColumn($column);
+                }
             }
-
-            $table->string('password')->change();
         });
     }
 };
