@@ -176,4 +176,30 @@ return [
 
     'tax_rate' => Shopper\Core\Models\TaxRate::class,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Customer Model
+    |--------------------------------------------------------------------------
+    |
+    | Eloquent model of the shop customers (order owner, addresses, refunds,
+    | discount eligibility, search). It defaults to the authentication user
+    | model, so the stock behaviour is unchanged; a host application may point
+    | it at a dedicated customer model.
+    |
+    */
+
+    'customer' => config('auth.providers.users.model'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Customer Title Column
+    |--------------------------------------------------------------------------
+    |
+    | Column of the customer model shown, searched and filtered by in the
+    | customer column and the customer filter of the orders list.
+    |
+    */
+
+    'customer_title_column' => 'first_name',
+
 ];

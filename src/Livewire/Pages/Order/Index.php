@@ -181,7 +181,7 @@ class Index extends AbstractPageComponent implements HasActions, HasSchemas, Has
                         'shopper::livewire.tables.cells.orders.purchased',
                         ['order' => $record]
                     )),
-                UserColumn::make('customer.first_name')
+                UserColumn::make('customer.'.config('shopper.models.customer_title_column', 'first_name'))
                     ->label(__('shopper::words.customer'))
                     ->user(fn (Order $record) => $record->customer)
                     ->searchable()
@@ -234,7 +234,7 @@ class Index extends AbstractPageComponent implements HasActions, HasSchemas, Has
                         )),
                 SelectFilter::make('customer_id')
                     ->label(__('shopper::words.customer'))
-                    ->relationship('customer', 'first_name')
+                    ->relationship('customer', config('shopper.models.customer_title_column', 'first_name'))
                     ->searchable(),
                 SelectFilter::make('status')
                     ->label(__('shopper::forms.label.status'))

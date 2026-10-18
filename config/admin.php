@@ -63,6 +63,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Customer Role On Order
+    |--------------------------------------------------------------------------
+    |
+    | When true, the customer of a created order receives the "user" role
+    | (EnsureCustomerRole listener on OrderCreated). Set it to false when the
+    | customer model has no roles.
+    |
+    */
+
+    'customer_role_on_order' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Brand Logo
     |--------------------------------------------------------------------------
     |

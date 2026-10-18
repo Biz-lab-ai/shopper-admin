@@ -125,7 +125,7 @@ trait InteractsWithDiscountItems
             return new EloquentCollection;
         }
 
-        return config('auth.providers.users.model')::query()
+        return config('shopper.models.customer')::query()
             ->whereIn('id', $ids)
             ->get();
     }

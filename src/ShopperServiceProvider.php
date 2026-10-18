@@ -132,7 +132,9 @@ final class ShopperServiceProvider extends PackageServiceProvider
         $this->app->register(SidebarServiceProvider::class);
         $this->app->register(ComponentsServiceProvider::class);
 
-        $this->app['events']->listen(OrderCreated::class, EnsureCustomerRole::class);
+        if (config('shopper.admin.customer_role_on_order', true)) {
+            $this->app['events']->listen(OrderCreated::class, EnsureCustomerRole::class);
+        }
 
         if (config('shopper.admin.notifications.database.enabled')) {
             $this->app->register(EventServiceProvider::class);
@@ -168,9 +170,10 @@ final class ShopperServiceProvider extends PackageServiceProvider
                 fn (): Component => SchemaView::make('shopper::livewire.pages.discounts.partials.items-list')
                     ->viewData(['type' => 'customers'])
                     ->visible(fn (Get $get): bool => $get('eligibility') === DiscountEligibility::Customers->value),
-                fn (array $ids): array => resolve(config('auth.providers.users.model'))->newQuery()
+                fn (array $ids): array => resolve(config('shopper.models.customer'))->newQuery()
                     ->scopes('customers')
                     ->whereIn('id', $ids)
+                    ->toBase()
                     ->pluck('id')
                     ->map(fn ($id): int => (int) $id)
                     ->all(),

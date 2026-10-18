@@ -118,7 +118,7 @@ final class StatCards extends Component
      */
     private function buildCustomersCard(Carbon $now): array
     {
-        $userModel = config('auth.providers.users.model');
+        $userModel = config('shopper.models.customer');
 
         $current = $userModel::query()
             ->scopes('customers')
