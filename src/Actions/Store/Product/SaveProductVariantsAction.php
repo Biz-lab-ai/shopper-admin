@@ -81,7 +81,7 @@ final class SaveProductVariantsAction
 
                 $existingCompare = $variant->prices()
                     ->where('currency_id', $defaultCurrencyId)
-                    ->value('compare_amount');
+                    ->toBase()->value('compare_amount');
 
                 $variant->prices()->updateOrCreate(
                     ['currency_id' => $defaultCurrencyId],
