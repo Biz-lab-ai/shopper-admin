@@ -17,6 +17,7 @@ use Livewire\Component;
 use Mckenziearts\Icons\Untitledui\Enums\Untitledui;
 use Shopper\Core\Events\Products\ProductDeleted;
 use Shopper\Core\Models\Contracts\Product as ProductContract;
+use Shopper\Core\Stock\StockedModelDeletion;
 use Shopper\Traits\HandlesAuthorizationExceptions;
 
 class DeleteAction extends Component implements HasActions, HasSchemas
@@ -42,7 +43,7 @@ class DeleteAction extends Component implements HasActions, HasSchemas
             ->action(function (): void {
                 event(new ProductDeleted($this->product));
 
-                $this->product->delete();
+                resolve(StockedModelDeletion::class)->deleteProduct((int) $this->product->getKey());
 
                 Notification::make()
                     ->title(__('shopper::notifications.delete', ['item' => __('shopper::pages/products.single')]))

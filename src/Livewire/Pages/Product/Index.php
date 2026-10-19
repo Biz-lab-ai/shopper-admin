@@ -41,6 +41,7 @@ use Shopper\Core\Import\Contracts\ImportSource;
 use Shopper\Core\Import\ImportManager;
 use Shopper\Core\Models\Contracts\Product;
 use Shopper\Core\Models\Contracts\ProductVariant;
+use Shopper\Core\Stock\StockedModelDeletion;
 use Shopper\Feature;
 use Shopper\Livewire\Pages\AbstractPageComponent;
 use Shopper\Traits\HandlesAuthorizationExceptions;
@@ -195,7 +196,7 @@ class Index extends AbstractPageComponent implements HasActions, HasSchemas, Has
                         ->action(function (Product $record): void {
                             event(new ProductDeleted($record));
 
-                            $record->delete();
+                            resolve(StockedModelDeletion::class)->deleteProduct((int) $record->getKey());
                         })
                         ->authorize('products.delete')
                         ->visible(shopper()->auth()->user()->can('products.delete')),

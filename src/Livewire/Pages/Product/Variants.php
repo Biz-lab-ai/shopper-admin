@@ -19,6 +19,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Layout;
@@ -28,6 +29,7 @@ use Livewire\Component;
 use Mckenziearts\Icons\Untitledui\Enums\Untitledui;
 use Shopper\Core\Models\Contracts\Product;
 use Shopper\Core\Models\Contracts\ProductVariant;
+use Shopper\Core\Stock\StockedModelDeletion;
 use Shopper\Traits\HandlesAuthorizationExceptions;
 
 #[Lazy]
@@ -124,6 +126,11 @@ class Variants extends Component implements HasActions, HasSchemas, HasTable
                     ),
                 DeleteAction::make()
                     ->authorize('products.variants.delete')
+                    ->using(function (Model $record): bool {
+                        resolve(StockedModelDeletion::class)->deleteVariant((int) $record->getKey());
+
+                        return true;
+                    })
                     ->icon(Untitledui::Trash03)
                     ->iconButton()
                     ->modalIcon(Untitledui::Trash03)
@@ -135,7 +142,9 @@ class Variants extends Component implements HasActions, HasSchemas, HasTable
                     ->label(__('shopper::forms.actions.delete'))
                     ->requiresConfirmation()
                     ->action(function (Collection $records): void {
-                        $records->each->delete();
+                        $records->each(
+                            fn (Model $record) => resolve(StockedModelDeletion::class)->deleteVariant((int) $record->getKey()),
+                        );
 
                         Notification::make()
                             ->title(__('shopper::forms.actions.delete'))
